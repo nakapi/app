@@ -1,10 +1,10 @@
 package mysql
 
 import (
-	"app/infrastructure/config"
+	"app/interface/config"
 	"app/interface/database"
 	"database/sql"
-	"strconv"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -14,16 +14,17 @@ type SqlHandler struct {
 	Conn *sql.DB
 }
 
-func NewSqlHandler(conf config.Config) database.SqlHandler {
-	condsn := conf.Mysql.User + ":" + conf.Mysql.Password + "@tcp(" + conf.Mysql.Host + ":" + strconv.Itoa(conf.Mysql.Port) + ")/" + conf.Mysql.Database
+func NewSqlHandler(configHandler config.ConfigHandler) (database.SqlHandler, error) {
+	fmt.Println(configHandler.GetDatabaseUser())
+	condsn := configHandler.GetDatabaseUser() + ":" + configHandler.GetDatabasePassword() + "@tcp(" + configHandler.GetDatabaseHost() + ":" + configHandler.GetDatabasePort() + ")/" + configHandler.GetDatabase()
 	conn, err := sql.Open("mysql", condsn)
 
 	if err != nil {
-		panic(err.Error())
+		return nil, fmt.Errorf("DB Connection Configure Error %s", err.Error())
 	}
 	sqlHandler := new(SqlHandler)
 	sqlHandler.Conn = conn
-	return sqlHandler
+	return sqlHandler, nil
 }
 
 func (handler *SqlHandler) Execute(statement string, args ...interface{}) (database.Result, error) {
