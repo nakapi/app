@@ -39,8 +39,6 @@ func (client *CLI) Run(args []string) int {
 	logger := logger.NewLoggerHandler()
 	logger.Set(conf)
 	logger.Info()
-	//	logger, _ := zap.NewDevelopment()
-	//	logger.Info("Hello Zap", zap.String("key", "value"), zap.Time("now", time.Now()))
 
 	// Database
 	sqlHandler, err := mysql.NewSqlHandler(conf)
