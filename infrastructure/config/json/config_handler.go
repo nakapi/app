@@ -22,13 +22,12 @@ func NewConfigHandler() config.ConfigHandler {
 func (handler *ConfigHandler) Load() error {
 	u, err := user.Current()
 	if err != nil {
-		fmt.Println(err.Error())
-		return err
+		return fmt.Errorf("Get User Failed %s", err.Error())
 	}
 	p := filepath.Join(u.HomeDir, "go", "src", "app", "config", "config.json")
 	raw, err := ioutil.ReadFile(p)
 	if err != nil {
-		fmt.Println(err.Error())
+		return fmt.Errorf("Get Config File Failed %s", err.Error())
 		return err
 	}
 	json.Unmarshal(raw, &handler)

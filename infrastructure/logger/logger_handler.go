@@ -5,9 +5,9 @@ import (
 	"app/interface/logger"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type LoggerHandler struct {
@@ -23,13 +23,42 @@ func (handler *LoggerHandler) Set(config config.ConfigHandler) error {
 	var appConfig zap.Config
 	err := json.Unmarshal(config.GetLogger(), &appConfig)
 	if err != nil {
-		fmt.Println("bbb")
 		return fmt.Errorf("Logger Config is incorrect")
 	}
 	handler.Logger, _ = appConfig.Build()
 	return nil
 }
 
-func (handler *LoggerHandler) Info() {
-	handler.Logger.Info("Hello Zap", zap.String("key", "value"), zap.Time("now", time.Now()))
+func (handler *LoggerHandler) Info(argv ...interface{}) {
+	firstArgv := GetFirstArgv(argv...)
+	optionArgv := GetOptionArgv(argv...)
+	handler.Logger.Info(firstArgv, optionArgv...)
+}
+
+func (handler *LoggerHandler) Debug(argv ...interface{}) {
+	firstArgv := GetFirstArgv(argv...)
+	optionArgv := GetOptionArgv(argv...)
+	handler.Logger.Debug(firstArgv, optionArgv...)
+}
+
+func (handler *LoggerHandler) Error(argv ...interface{}) {
+	firstArgv := GetFirstArgv(argv...)
+	optionArgv := GetOptionArgv(argv...)
+	handler.Logger.Error(firstArgv, optionArgv...)
+}
+
+func GetFirstArgv(argv ...interface{}) string {
+	firstArgv, _ := argv[0].(string)
+	return firstArgv
+}
+
+func GetOptionArgv(argv ...interface{}) []zapcore.Field {
+	var optionsArgv []zapcore.Field
+	for _, value := range argv[1:] {
+		configValue, ok := value.(zapcore.Field)
+		if ok {
+			optionsArgv = append(optionsArgv, configValue)
+		}
+	}
+	return optionsArgv
 }
