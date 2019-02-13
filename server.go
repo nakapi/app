@@ -3,9 +3,10 @@ package main
 import (
 	file "app/infrastructure/config/json"
 	"app/infrastructure/database"
-	"app/infrastructure/database/repository"
 	"app/infrastructure/logger"
-	"app/usecase"
+	"app/interface/controller"
+	"context"
+	"strconv"
 	"time"
 
 	"fmt"
@@ -40,11 +41,9 @@ func (client *CLI) Run(args []string) int {
 		return errorConfig
 	}
 	// Log
-	//	var appLogConfig zap.Config
 	logger := logger.NewLoggerHandler()
 	logger.Set(conf)
-	logger.Info("Test", zap.String("key", "value"), zap.Time("now", time.Now()))
-	logger.Error("Test")
+	logger.Info("App Start", zap.String("key", "value"), zap.Time("now", time.Now()))
 
 	// Database
 	sqlHandler, err := database.NewSqlHandler(conf)
@@ -53,32 +52,14 @@ func (client *CLI) Run(args []string) int {
 		return errorDBConnection
 	}
 
-	interactor := usecase.TestInteractor{
-		TestRepository: repository.TestRepository{
-			SqlHandler: sqlHandler,
-		},
-	}
-	tests, err := interactor.Tests()
-	fmt.Println(err)
-	fmt.Println(tests)
+	// Controller->UseCase(Interactor)->Repository(findAll)->Domain(Tests->Test) ===> Context Return
+	controller := controller.NewTestController(sqlHandler)
+	ctx := context.Background()
+	controller.Index(&ctx)
+	logger.Debug("Controller Result", zap.String("KEY", "VALUE"), zap.String("ID", strconv.Itoa(ctx.Value("id").(int))))
+	logger.Debug("Controller Result", zap.String("KEY", "VALUE"), zap.String("NAME", ctx.Value("name").(string)))
 
-	/*
-		res, err := sqlHandler.Query("select * from test")
-		defer res.Close()
-		if err != nil {
-			logger.Error("SqlHandler Query Failed. %s", err.Error())
-			return errorDBConnection
-		}
-		var id int
-		var name string
-		res.Next()
-		if err = res.Scan(&id, &name); err != nil {
-			fmt.Println(err.Error())
-			return errorDBConnection
-		}
-		fmt.Println(id)
-		fmt.Println(name)
-	*/
-
+	// End
+	logger.Info("App End", zap.String("key", "value"), zap.Time("now", time.Now()))
 	return noError
 }
