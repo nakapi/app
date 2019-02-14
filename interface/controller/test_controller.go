@@ -3,8 +3,8 @@ package controller
 import (
 	"app/infrastructure/database/repository"
 	"app/interface/database"
+	"app/interface/presenter"
 	"app/usecase"
-	"context"
 )
 
 type TestController struct {
@@ -17,16 +17,12 @@ func NewTestController(sqlHandler database.SqlHandler) *TestController {
 			TestRepository: repository.TestRepository{
 				SqlHandler: sqlHandler,
 			},
+			TestPresenter: presenter.TestPresenter{},
 		},
 	}
 }
 
-func (controller *TestController) Index(ctx *context.Context) {
-	tests, err := controller.Interactor.Tests()
-	if err != nil {
-		return
-	}
-	*ctx = context.WithValue(*ctx, "id", tests[0].Id)
-	*ctx = context.WithValue(*ctx, "name", tests[0].Name)
+func (controller *TestController) Index() {
+	controller.Interactor.Tests()
 	return
 }

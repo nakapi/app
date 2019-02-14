@@ -5,8 +5,6 @@ import (
 	"app/infrastructure/database"
 	"app/infrastructure/logger"
 	"app/interface/controller"
-	"context"
-	"strconv"
 	"time"
 
 	"fmt"
@@ -54,10 +52,7 @@ func (client *CLI) Run(args []string) int {
 
 	// Controller->UseCase(Interactor)->Repository(findAll)->Domain(Tests->Test) ===> Context Return
 	controller := controller.NewTestController(sqlHandler)
-	ctx := context.Background()
-	controller.Index(&ctx)
-	logger.Debug("Controller Result", zap.String("KEY", "VALUE"), zap.String("ID", strconv.Itoa(ctx.Value("id").(int))))
-	logger.Debug("Controller Result", zap.String("KEY", "VALUE"), zap.String("NAME", ctx.Value("name").(string)))
+	controller.Index()
 
 	// End
 	logger.Info("App End", zap.String("key", "value"), zap.Time("now", time.Now()))

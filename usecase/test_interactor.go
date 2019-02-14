@@ -3,10 +3,13 @@ package usecase
 import (
 	"app/domain"
 	"app/infrastructure/database/repository"
+	"app/interface/presenter"
+	"fmt"
 )
 
 type TestInteractor struct {
 	TestRepository repository.TestRepository
+	TestPresenter  presenter.TestPresenter
 }
 
 func (interactor *TestInteractor) Add(test domain.Test) (insertTest domain.Test, err error) {
@@ -18,8 +21,14 @@ func (interactor *TestInteractor) Add(test domain.Test) (insertTest domain.Test,
 	return
 }
 
-func (interactor *TestInteractor) Tests() (tests domain.Tests, err error) {
-	tests, err = interactor.TestRepository.FindAll()
+func (interactor *TestInteractor) Tests() {
+	tests, err := interactor.TestRepository.FindAll()
+	if err != nil {
+		interactor.TestPresenter.TestOutputData.Error = fmt.Errorf("Find ALl Failed %s", err.Error())
+	}
+	interactor.TestPresenter.TestOutputData.Id = tests[0].Id
+	interactor.TestPresenter.TestOutputData.Name = tests[0].Name
+	interactor.TestPresenter.Complete()
 	return
 }
 
