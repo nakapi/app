@@ -2,7 +2,12 @@ package presenter
 
 import (
 	"app/interface/presenter/dto"
+	"bytes"
 	"fmt"
+	"io"
+	"os/user"
+	"path/filepath"
+	"text/template"
 )
 
 type TestPresenter struct {
@@ -14,6 +19,21 @@ func (presenter *TestPresenter) Complete() {
 		fmt.Println(presenter.TestOutputData.Error.Error())
 		return
 	}
-	fmt.Println("ID:", presenter.TestOutputData.Id)
-	fmt.Println("NAME:", presenter.TestOutputData.Name)
+	user, err := user.Current()
+	if err != nil {
+		fmt.Println("Get User Failed ", err.Error())
+		return
+	}
+	path := filepath.Join(user.HomeDir, "go", "src", "app", "infrastructure", "gui", "test.html")
+
+	tmpl := template.Must(template.ParseFiles(path))
+	buffer := new(bytes.Buffer)
+	fw := io.Writer(buffer)
+	dat := presenter.TestOutputData
+	if err := tmpl.ExecuteTemplate(fw, "test", dat); err != nil {
+		fmt.Println("Template Error ", err.Error())
+		return
+	}
+	fmt.Println(string(buffer.Bytes()))
+
 }
