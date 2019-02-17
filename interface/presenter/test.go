@@ -14,7 +14,7 @@ type TestPresenter struct {
 	TestOutputData dto.TestOuputData
 }
 
-func (presenter *TestPresenter) Complete() {
+func (presenter TestPresenter) Complete() {
 	if presenter.TestOutputData.Error != nil {
 		fmt.Println(presenter.TestOutputData.Error.Error())
 		return

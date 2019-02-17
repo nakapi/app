@@ -22,7 +22,7 @@ func NewTestController(sqlHandler database.SqlHandler) *TestController {
 	}
 }
 
-func (controller *TestController) Index() {
+func (controller TestController) Index() {
 	controller.Interactor.Tests()
 	return
 }

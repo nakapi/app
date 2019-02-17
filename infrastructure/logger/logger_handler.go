@@ -29,19 +29,19 @@ func (handler *LoggerHandler) Set(config config.ConfigHandler) error {
 	return nil
 }
 
-func (handler *LoggerHandler) Info(argv ...interface{}) {
+func (handler LoggerHandler) Info(argv ...interface{}) {
 	firstArgv := GetFirstArgv(argv...)
 	optionArgv := GetOptionArgv(argv...)
 	handler.Logger.Info(firstArgv, optionArgv...)
 }
 
-func (handler *LoggerHandler) Debug(argv ...interface{}) {
+func (handler LoggerHandler) Debug(argv ...interface{}) {
 	firstArgv := GetFirstArgv(argv...)
 	optionArgv := GetOptionArgv(argv...)
 	handler.Logger.Debug(firstArgv, optionArgv...)
 }
 
-func (handler *LoggerHandler) Error(argv ...interface{}) {
+func (handler LoggerHandler) Error(argv ...interface{}) {
 	firstArgv := GetFirstArgv(argv...)
 	optionArgv := GetOptionArgv(argv...)
 	handler.Logger.Error(firstArgv, optionArgv...)

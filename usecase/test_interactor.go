@@ -12,7 +12,7 @@ type TestInteractor struct {
 	TestPresenter  presenter.TestPresenter
 }
 
-func (interactor *TestInteractor) Add(test domain.Test) (insertTest domain.Test, err error) {
+func (interactor TestInteractor) Add(test domain.Test) (insertTest domain.Test, err error) {
 	identifier, err := interactor.TestRepository.Store(test)
 	if err != nil {
 		return
@@ -21,7 +21,7 @@ func (interactor *TestInteractor) Add(test domain.Test) (insertTest domain.Test,
 	return
 }
 
-func (interactor *TestInteractor) Tests() {
+func (interactor TestInteractor) Tests() {
 	tests, err := interactor.TestRepository.FindAll()
 	if err != nil {
 		interactor.TestPresenter.TestOutputData.Error = fmt.Errorf("Find ALl Failed %s", err.Error())
@@ -32,7 +32,7 @@ func (interactor *TestInteractor) Tests() {
 	return
 }
 
-func (interactor *TestInteractor) TestById(identifier int) (test domain.Test, err error) {
+func (interactor TestInteractor) TestById(identifier int) (test domain.Test, err error) {
 	test, err = interactor.TestRepository.FindById(identifier)
 	return
 }

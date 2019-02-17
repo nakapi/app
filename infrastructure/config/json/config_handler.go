@@ -34,23 +34,23 @@ func (handler *ConfigHandler) Load() error {
 	return nil
 }
 
-func (handler *ConfigHandler) GetDatabaseUser() string {
+func (handler ConfigHandler) GetDatabaseUser() string {
 	return handler.Database.User
 }
-func (handler *ConfigHandler) GetDatabasePassword() string {
+func (handler ConfigHandler) GetDatabasePassword() string {
 	return handler.Database.Password
 }
-func (handler *ConfigHandler) GetDatabaseHost() string {
+func (handler ConfigHandler) GetDatabaseHost() string {
 	return handler.Database.Host
 }
-func (handler *ConfigHandler) GetDatabasePort() string {
+func (handler ConfigHandler) GetDatabasePort() string {
 	return handler.Database.Port
 }
-func (handler *ConfigHandler) GetDatabase() string {
+func (handler ConfigHandler) GetDatabase() string {
 	return handler.Database.Database
 }
 
-func (handler *ConfigHandler) GetLogger() []byte {
+func (handler ConfigHandler) GetLogger() []byte {
 	loggerJson, _ := json.Marshal(handler.Logger)
 	return loggerJson
 }
