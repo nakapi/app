@@ -1,60 +1,65 @@
+// メインパッケージ
+// main
 package main
 
+//  インポートパッケージ
 import (
-	file "app/infrastructure/config/json"
-	"app/infrastructure/database"
-	"app/infrastructure/logger"
+	"app/infrastructure/dicontainer"
 	"app/interface/controller"
-	"time"
-
+	"app/interface/logger"
 	"fmt"
+
 	"io"
 	"os"
-
-	"go.uber.org/zap"
 )
 
+// コマンド結果リスト
 const (
 	noError           = iota // OK
 	errorDBConnection        // NG
 	errorConfig              // NG
 )
 
+// クライアントコマンドインタフェース構造
+type CLI struct {
+	// 標準出力先
+	outStream io.Writer
+	// エラー出力先
+	errStream io.Writer
+}
+
+// メイン処理を行います
 func main() {
 	client := &CLI{outStream: os.Stdout, errStream: os.Stderr}
 	os.Exit(client.Run(os.Args))
 }
 
-type CLI struct {
-	outStream io.Writer
-	errStream io.Writer
-}
-
+// メイン処理の中で、実際の処理を担い結果を出力します。
 func (client *CLI) Run(args []string) int {
-	// Config
-	conf := file.NewConfigHandler()
-	err := conf.Load()
+
+	// DIContainer
+	// TODO: DI Error Handling
+	container := dicontainer.NewContainerHandler()
+
+	// Logging begin
+	logContainer, err := container.Resolve("logger")
 	if err != nil {
-		fmt.Println("Config Load Failed %s", err.Error())
+		fmt.Println(err.Error())
 		return errorConfig
 	}
-	// Log
-	logger := logger.NewLoggerHandler()
-	logger.Set(conf)
-	logger.Info("App Start", zap.String("key", "value"), zap.Time("now", time.Now()))
+	loggerHandler := logContainer.(logger.LoggerHandler)
+	loggerHandler.Info("App Begin")
 
-	// Database
-	sqlHandler, err := database.NewSqlHandler(conf)
+	// Controller:Controller->UseCase(Interactor)->Repository(findAll)->Domain(Tests->Test) ===> Context Return
+	controllerContainer, err := container.Resolve("testController")
 	if err != nil {
-		logger.Error("SqlHandler instance Failed. %s", err.Error())
-		return errorDBConnection
+		loggerHandler.Error("Controller DI Container Resolver Failed ", err.Error())
+		return errorConfig
 	}
-
-	// Controller->UseCase(Interactor)->Repository(findAll)->Domain(Tests->Test) ===> Context Return
-	controller := controller.NewTestController(sqlHandler)
-	controller.Index()
+	testController := controllerContainer.(*controller.TestController)
+	testController.Index()
 
 	// End
-	logger.Info("App End", zap.String("key", "value"), zap.Time("now", time.Now()))
+	loggerHandler.Info("App End")
 	return noError
 }

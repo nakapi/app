@@ -16,6 +16,7 @@ type ConfigHandler struct {
 
 func NewConfigHandler() config.ConfigHandler {
 	configHandler := new(ConfigHandler)
+	configHandler.Load()
 	return configHandler
 }
 

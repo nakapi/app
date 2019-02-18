@@ -4,7 +4,6 @@ import (
 	"app/interface/config"
 	"app/interface/database"
 	"database/sql"
-	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -14,16 +13,15 @@ type SqlHandler struct {
 	Conn *sql.DB
 }
 
-func NewSqlHandler(configHandler config.ConfigHandler) (database.SqlHandler, error) {
+func NewSqlHandler(configHandler config.ConfigHandler) database.SqlHandler {
 	condsn := configHandler.GetDatabaseUser() + ":" + configHandler.GetDatabasePassword() + "@tcp(" + configHandler.GetDatabaseHost() + ":" + configHandler.GetDatabasePort() + ")/" + configHandler.GetDatabase()
 	conn, err := sql.Open("mysql", condsn)
-
 	if err != nil {
-		return nil, fmt.Errorf("DB Connection Configure Error %s", err.Error())
+		return nil
 	}
 	sqlHandler := new(SqlHandler)
 	sqlHandler.Conn = conn
-	return sqlHandler, nil
+	return sqlHandler
 }
 
 func (handler *SqlHandler) Execute(statement string, args ...interface{}) (database.Result, error) {
