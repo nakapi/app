@@ -38,16 +38,19 @@ func main() {
 func (client *CLI) Run(args []string) int {
 
 	// DIContainer
-	// TODO: DI Error Handling
-	container := dicontainer.NewContainerHandler()
-
-	// Logging begin
-	logContainer, err := container.Resolve("logger")
+	container, err := dicontainer.NewContainerHandler()
 	if err != nil {
 		fmt.Println(err.Error())
 		return errorConfig
 	}
-	loggerHandler := logContainer.(logger.LoggerHandler)
+
+	// Logging begin
+	loggerContainer, err := container.Resolve("logger")
+	if err != nil {
+		fmt.Println(err.Error())
+		return errorConfig
+	}
+	loggerHandler := loggerContainer.(logger.LoggerHandler)
 	loggerHandler.Info("App Begin")
 
 	// Controller:Controller->UseCase(Interactor)->Repository(findAll)->Domain(Tests->Test) ===> Context Return

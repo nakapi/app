@@ -14,10 +14,14 @@ type ConfigHandler struct {
 	Logger   LoggerConfig   `json:"logger"`
 }
 
-func NewConfigHandler() config.ConfigHandler {
+func NewConfigHandler() (config.ConfigHandler, error) {
 	configHandler := new(ConfigHandler)
-	configHandler.Load()
-	return configHandler
+	err := configHandler.Load()
+	if err != nil {
+		return nil, fmt.Errorf("New ConfigHandler Failed", err.Error())
+	}
+
+	return configHandler, nil
 }
 
 func (handler *ConfigHandler) Load() error {

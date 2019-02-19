@@ -14,14 +14,13 @@ type LoggerHandler struct {
 	Logger *zap.Logger
 }
 
-func NewLoggerHandler(config config.ConfigHandler) logger.LoggerHandler {
+func NewLoggerHandler(config config.ConfigHandler) (logger.LoggerHandler, error) {
 	handler := new(LoggerHandler)
 	err := handler.Set(config)
 	if err != nil {
-		fmt.Println("Log Config Error", err.Error())
-		return nil
+		return nil, fmt.Errorf("Log Config Error", err.Error())
 	}
-	return handler
+	return handler, nil
 }
 
 func (handler *LoggerHandler) Set(config config.ConfigHandler) error {
