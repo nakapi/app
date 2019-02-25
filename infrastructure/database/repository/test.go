@@ -10,6 +10,12 @@ type TestRepository struct {
 	database.SqlHandler
 }
 
+func NewTestRepository(handler database.SqlHandler) *TestRepository {
+	repository := new(TestRepository)
+	repository.SqlHandler = handler
+	return repository
+}
+
 func (repository *TestRepository) Store(test domain.Test) (id int, err error) {
 	result, err := repository.Execute(
 		"insert into test (id, name) values (?,?)", test.Id, test.Name,

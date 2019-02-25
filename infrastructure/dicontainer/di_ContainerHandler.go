@@ -3,10 +3,13 @@ package dicontainer
 import (
 	"app/infrastructure/config/json"
 	"app/infrastructure/database"
+	"app/infrastructure/database/repository"
 	"app/infrastructure/log"
 	"app/interface/config"
 	"app/interface/controller"
 	idi "app/interface/di"
+	"app/interface/presenter"
+	"app/usecase"
 
 	"github.com/sarulabs/di"
 )
@@ -40,7 +43,27 @@ func NewContainerHandler() (idi.DiContainer, error) {
 		{
 			Name: "testController",
 			Build: func(container di.Container) (interface{}, error) {
-				return controller.NewTestController(container.Get("database").(*database.SqlHandler)), nil
+				return controller.NewTestController(container.Get("testInteractor").(usecase.ITestInteractor)), nil
+			},
+		},
+		{
+			Name: "testPresenter",
+			Build: func(container di.Container) (interface{}, error) {
+				return presenter.NewTestPresenter(), nil
+			},
+		},
+		{
+			Name: "testRepository",
+			Build: func(container di.Container) (interface{}, error) {
+				return repository.NewTestRepository(container.Get("database").(*database.SqlHandler)), nil
+			},
+		},
+		{
+			Name: "testInteractor",
+			Build: func(container di.Container) (interface{}, error) {
+				repository := container.Get("testRepository").(*repository.TestRepository)
+				presenter := container.Get("testPresenter").(*presenter.TestPresenter)
+				return usecase.NewTestInteractor(*repository, *presenter), nil
 			},
 		},
 	}...,

@@ -1,28 +1,20 @@
 package controller
 
 import (
-	"app/infrastructure/database/repository"
-	"app/interface/database"
-	"app/interface/presenter"
 	"app/usecase"
 )
 
 type TestController struct {
-	Interactor usecase.TestInteractor
+	Interactor usecase.ITestInteractor
 }
 
-func NewTestController(sqlHandler database.SqlHandler) *TestController {
-	return &TestController{
-		Interactor: usecase.TestInteractor{
-			TestRepository: repository.TestRepository{
-				SqlHandler: sqlHandler,
-			},
-			TestPresenter: presenter.TestPresenter{},
-		},
-	}
+func NewTestController(interactor usecase.ITestInteractor) *TestController {
+	controller := new(TestController)
+	controller.Interactor = interactor
+	return controller
 }
 
 func (controller TestController) Index() {
-	controller.Interactor.Tests()
+	controller.Interactor.Handle()
 	return
 }
