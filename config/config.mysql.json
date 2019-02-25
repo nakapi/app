@@ -3,7 +3,7 @@
     {
         "user":"test",
         "host":"127.0.0.1",
-        "port":"9200",
+        "port":"3306",
         "password":"Testtest1",
         "database":"test"
     },
