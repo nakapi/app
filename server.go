@@ -4,9 +4,6 @@ package main
 
 //  インポートパッケージ
 import (
-	"app/domain"
-	"app/infrastructure/config/json"
-	"app/infrastructure/database"
 	"app/infrastructure/dicontainer"
 	"app/interface/controller"
 	"app/interface/logger"
@@ -41,23 +38,25 @@ func main() {
 func (client *CLI) Run(args []string) int {
 
 	// ElasticSearch
-	config, err := json.NewConfigHandler()
-	if err != nil {
-		fmt.Println("Config Failed", err.Error())
-	}
-	elclient, err := database.NewSqlHandler(config)
-	if err != nil {
-		fmt.Println("Elastic Client Failed", err.Error())
-	}
-	result, err := elclient.Query("id", "2")
-	if err != nil {
-		fmt.Println("Elastic Query Failed", err.Error())
-	}
-	var testObject domain.Test
-	result.Scan(&testObject)
-	fmt.Println(testObject)
+	/*
+		config, err := json.NewConfigHandler()
+		if err != nil {
+			fmt.Println("Config Failed", err.Error())
+		}
+		elclient, err := database.NewSqlHandler(config)
+		if err != nil {
+			fmt.Println("Elastic Client Failed", err.Error())
+		}
+		result, err := elclient.Query("id", "2")
+		if err != nil {
+			fmt.Println("Elastic Query Failed", err.Error())
+		}
+		var testObject domain.Test
+		result.Scan(&testObject)
+		fmt.Println(testObject)
 
-	return noError
+		return noError
+	*/
 
 	// DIContainer
 	container, err := dicontainer.NewContainerHandler()
